@@ -1,18 +1,7 @@
 import numpy as np
-
 import argparse
 
-def main():
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument('--size', type=int,
-            default=10, help='max size of matrix')
-
-    parser.add_argument('--number', type=int,
-            default=10, help='number of test set')
-
-    args = parser.parse_args()
-
+def main(args):
     test   = open('test.txt', 'w')
     answer = open('answer.txt', 'w')
 
@@ -42,4 +31,14 @@ def main():
     answer.close()
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--size', type=int,
+            default=10, help='max size of matrix')
+
+    parser.add_argument('--number', type=int,
+            default=10, help='number of test set')
+
+    args = parser.parse_args()
+
+    main(args)

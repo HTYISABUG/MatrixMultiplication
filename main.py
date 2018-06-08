@@ -1,3 +1,5 @@
+#!bin/python3
+
 import sys
 from threading import Thread, Lock
 import numpy as np

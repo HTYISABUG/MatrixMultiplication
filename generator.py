@@ -33,7 +33,7 @@ def main():
         for r in range(mat2.shape[0]):
             test.write('%s\n' % (' '.join(mat2[r].astype(str))))
 
-        ans = mat1 * mat2
+        ans = np.matmul(mat1, mat2)
         
         for r in range(ans.shape[0]):
             answer.write('%s\n' % (' '.join(ans[r].astype(str))))

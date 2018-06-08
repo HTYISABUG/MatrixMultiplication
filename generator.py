@@ -35,10 +35,10 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--size', type=int,
+    parser.add_argument('--size', '-s', type=int,
             default=10, help='max size of matrix')
 
-    parser.add_argument('--number', type=int,
+    parser.add_argument('--number', '-n', type=int,
             default=10, help='number of test set')
 
     args = parser.parse_args()

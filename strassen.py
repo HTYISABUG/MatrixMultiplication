@@ -26,18 +26,16 @@ def print_matrix(result_m):
 
 def add(A, B):
     n = len(A)
-    C = [[0 for j in range(0, n)] for i in range(0, n)]
+    C = []
     for i in range(0, n):
-        for j in range(0, n):
-            C[i][j] = A[i][j] + B[i][j]
+        C.append([x+y for x,y in zip(A[i], B[i])])
     return C
 
 def sub(A, B):
     n = len(A)
-    C = [[0 for j in range(0, n)] for i in range(0, n)]
+    C = []
     for i in range(0, n):
-        for j in range(0, n):
-            C[i][j] = A[i][j] - B[i][j]
+        C.append([x-y for x,y in zip(A[i], B[i])])
     return C
 
 def mul(A, B):

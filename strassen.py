@@ -38,10 +38,10 @@ def sub(A, B):
 def mul(A, B):
     n = len(A)
     C = [[0 for j in range(0, n)] for i in range(0, n)]
-    for i in range(0, n):
-        for j in range(0, n):
-            for k in range(0, n):
-                C[i][j] += A[i][k] * B[k][j]
+    for k in range(0, n):
+        for i in range(0, n):
+            for j in range(0, n):
+                C[i][j] += A[i][k] * B[k][j] #cache hit max
     return C
 
 def strassen_rec(A, B):

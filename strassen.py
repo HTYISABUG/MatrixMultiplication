@@ -1,29 +1,25 @@
 #!/usr/bin/python3
 import numpy as np
+import sys
+from threading import Thread, Lock
 
 def readFile():
-    print('TRANDITIONAL MATRIX MULTUPLICATION')
-    filename = input('Filename: ')
+    for line in sys.stdin:
+        mat1 = np.zeros([int(s) for s in line.split()])
 
-    with open(filename) as f:
-        matrix_A = []
-        matrix_B = []
-        i = 1
-        for line in f:
-            if i == 1:
-                A_row, A_col = [int(x) for x in line.split()] 
-                matrix = matrix_A
-            elif i == A_row+2:
-                B_row, B_col = [int(x) for x in line.split()] 
-                matrix = matrix_B
-            else:
-                matrix.append([int(x) for x in line.split()])
-            i = i + 1;
-        return matrix_A, matrix_B
+        for r in range(mat1.shape[0]):
+            mat1[r] = np.array([float(s) for s in input().split()])
 
-def print_matrix(result_m):
-    for line in result_m:
-        print(" ".join(map(str,line)))
+        mat2 = np.zeros([int(s) for s in input().split()])
+
+        for r in range(mat2.shape[0]):
+            mat2[r] = np.array([float(s) for s in input().split()])
+    return (mat1.tolist(), mat2.tolist())
+
+
+def print_matrix(res):
+    for r in res:
+        print(' '.join(['%g' % (c) for c in r]))
 
 def add(A, B):
     n = len(A)
@@ -115,7 +111,9 @@ def strassen_rec(A, B):
                 C[i+new_size][j] = c21[i][j]
                 C[i+new_size][j+new_size] = c22[i][j]
         return C
-
-if __name__ == '__main__':
+def main():
     matrix_A, matrix_B = readFile()
     print_matrix(strassen_rec(matrix_A,matrix_B))
+
+if __name__ == '__main__':
+    main()

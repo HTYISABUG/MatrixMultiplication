@@ -55,9 +55,9 @@ def strassen(a, b):
     if n <= 2:
         x = np.zeros((n, n))
 
-        for i in range(n):
-            for j in range(n):
-                for k in range(n):
+        for k in range(n):
+            for i in range(n):
+                for j in range(n):
                     x[i, j] += a_[i, k] * b_[k, j]
 
         return x[:a.shape[0], :b.shape[1]]

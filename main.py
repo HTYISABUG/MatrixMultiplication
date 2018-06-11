@@ -113,14 +113,62 @@ def strassen(a, b):
         c  = np.concatenate((c1, c2), axis=0)
 
         return c[:a.shape[0], :b.shape[1]]
+def anotherway(a, b):
+    threads = list()
+    thread_lock = Lock()
+    def mul(A, B):
+        length = len(A)
+        result = np.zeros((length,length)) #length*length
+        for i in range(0, length):
+            for j in range(0, length):
+                for k in range(0, length):
+                    result[i][j] += A[i][k] * B[j][k]
+        return result
+    
+    def expand(x, y):
+        edge = max(max(x.shape), max(y.shape))
+        e = 1
 
+        while e < edge:
+            e *= 2
+
+        x_, y_ = np.zeros((e, e)), np.zeros((e, e))
+        x_[:x.shape[0], :x.shape[1]] = x
+        y_[:y.shape[0], :y.shape[1]] = y
+
+        return x_, y_, e
+
+
+    def divide(x, n):
+        x11 = x[:n, :n]
+        x12 = x[:n, -n:]
+        x21 = x[-n:, :n]
+        x22 = x[-n:, -n:]
+
+        return x11, x12, x21, x22
+
+
+    a_, b_, n = expand(a, b)
+    b_= b_.T #transport
+    n = int(n / 2)
+    a11, a12, a21, a22 = divide(a_, n)
+    b11, b12, b21, b22 = divide(b_, n)
+    c11=mul(a11,b11)+mul(a12,b12)
+    c12=mul(a11,b21)+mul(a12,b22)
+    c21=mul(a21,b11)+mul(a22,b12)
+    c22=mul(a21,b21)+mul(a22,b22)
+    c1 = np.concatenate((c11, c12), axis=1)
+    c2 = np.concatenate((c21, c22), axis=1)
+    c  = np.concatenate((c1, c2), axis=0)
+    return c
+    
 def get_args():
     import argparse
 
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--mode', '-m',
-            default=0, help='0 for tradition, 1 for strassen')
+            default=0, help='0 for tradition, 1 for strassen , 2 for anotherway')
 
     args = parser.parse_args()
 
@@ -130,10 +178,9 @@ def main():
     args = get_args()
 
     mat1, mat2 = read_data()
-
-    res = tradition(mat1, mat2) if args.mode == 0 else strassen(mat1, mat2)
-
+    res = tradition(mat1, mat2) if args.mode == 0 else strassen(mat1, mat2) if args.mode == 1  else  anotherway(mat1, mat2)
     print(res)
 
 if __name__ == "__main__":
     main()
+

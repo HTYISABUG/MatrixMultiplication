@@ -127,7 +127,8 @@ def get_args():
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--mode', '-m', default=0)
+    parser.add_argument('--mode', '-m',
+            default=0, help='0 for tradition, 1 for strassen')
 
     args = parser.parse_args()
 

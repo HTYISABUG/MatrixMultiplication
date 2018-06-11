@@ -6,5 +6,5 @@ usage: main.py [-h] [--mode MODE]
 
 optional arguments:
   -h, --help            show this help message and exit
-  --mode MODE, -m MODE
+  --mode MODE, -m MODE  0 for tradition, 1 for strassen
 ```

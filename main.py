@@ -1,6 +1,7 @@
 #!bin/python3
 
 from threading import Thread, Lock
+import threadpool
 import numpy as np
 
 def read_data():
@@ -22,24 +23,15 @@ def tradition(mat1, mat2):
     threads = list()
     thread_lock = Lock()
 
-    def calculate(r, c):
-        tmp = float(0)
-
-        for i in range(mat1.shape[1]):
-            tmp += mat1[r, i] * mat2[i, c]
-
-        thread_lock.acquire()
-        res[r, c] = tmp
-        thread_lock.release()
-
-    for r in range(mat1.shape[0]):
+    def calculate(r):
         for c in range(mat2.shape[1]):
-            thread = Thread(target=calculate, args=(r, c))
-            thread.start()
-            threads.append(thread)
+            for i in range(mat1.shape[1]):
+                res[r, c] += mat1[r, i] * mat2[i, c]
 
-    for t in threads:
-        t.join()
+    pool = threadpool.ThreadPool(16)
+    requests = threadpool.makeRequests(calculate, range(len(mat1)))
+    [pool.putRequest(req) for req in requests]
+    pool.wait()
 
     return res
 

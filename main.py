@@ -153,10 +153,37 @@ def anotherway(a, b):
     n = int(n / 2)
     a11, a12, a21, a22 = divide(a_, n)
     b11, b12, b21, b22 = divide(b_, n)
-    c11=mul(a11,b11)+mul(a12,b12)
-    c12=mul(a11,b21)+mul(a12,b22)
-    c21=mul(a21,b11)+mul(a22,b12)
-    c22=mul(a21,b21)+mul(a22,b22)
+    p = [None, None, None, None, None, None, None, None]
+
+    def calculate(x, y, i):
+        tmp = mul(x, y)
+        thread_lock.acquire()
+        p[i] = tmp.copy()
+        thread_lock.release()
+    
+    threads = list()
+    threads.append(Thread(target=calculate, args=(a11, b11, 0)))
+    threads.append(Thread(target=calculate, args=(a12, b12, 1)))
+    threads.append(Thread(target=calculate, args=(a11, b21, 2)))
+    threads.append(Thread(target=calculate, args=(a12, b22, 3)))
+    threads.append(Thread(target=calculate, args=(a21, b11, 4)))
+    threads.append(Thread(target=calculate, args=(a22, b12, 5)))
+    threads.append(Thread(target=calculate, args=(a21, b21, 6)))
+    threads.append(Thread(target=calculate, args=(a22, b22, 7)))
+    for t in threads:
+        t.start()
+
+    for t in threads:
+        t.join()
+    p0, p1, p2, p3, p4, p5, p6, p7 = p
+    c11=p0+p1
+    c12=p2+p3
+    c21=p4+p5
+    c22=p6+p7
+    #c11=mul(a11,b11)+mul(a12,b12)
+    #c12=mul(a11,b21)+mul(a12,b22)
+    #c21=mul(a21,b11)+mul(a22,b12)
+    #c22=mul(a21,b21)+mul(a22,b22)
     c1 = np.concatenate((c11, c12), axis=1)
     c2 = np.concatenate((c21, c22), axis=1)
     c  = np.concatenate((c1, c2), axis=0)
@@ -168,7 +195,7 @@ def get_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--mode', '-m',
-            default=0, help='0 for tradition, 1 for strassen , 2 for anotherway')
+            default=2, help='0 for tradition, 1 for strassen , 2 for anotherway')
 
     args = parser.parse_args()
 

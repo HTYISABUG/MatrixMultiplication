@@ -61,6 +61,15 @@ def mul(a, b):
 
     return x
 
+def rise_hit_mul(A, B):
+    length = len(A)	
+    result = np.zeros((length,length))	
+    for i in range(0, length):	
+        for j in range(0, length):	
+            for k in range(0, length):	
+                result[i][j] += A[i][k] * B[j][k]	
+    return result
+
 def divide(x, n):
     x11 = x[:n, :n]
     x12 = x[:n, -n:]
@@ -130,7 +139,7 @@ def anotherway(a, b):
     p = [None, None, None, None, None, None, None, None]
 
     def calculate(a, b, i):
-        p[i] = mul(a, b)
+        p[i] = rise_hit_mul(a, b)
 
     arg = [([a11, b11, 0], {}),
            ([a12, b12, 1], {}),

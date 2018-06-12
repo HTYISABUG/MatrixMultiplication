@@ -9,3 +9,4 @@ logs/
 test.*
 answer.*
 data
+*.png

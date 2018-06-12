@@ -72,26 +72,23 @@ def divide(x, n):
 def strassen(a, b):
     a_, b_, n = expand(a, b)
 
-    if n <= 2:
-        x = mul(a_, b_)
+    n = int(n / 2)
 
-        return x[:a.shape[0], :b.shape[1]]
-    else:
-        n = int(n / 2)
+    a11, a12, a21, a22 = divide(a_, n)
+    b11, b12, b21, b22 = divide(b_, n)
 
-        a11, a12, a21, a22 = divide(a_, n)
-        b11, b12, b21, b22 = divide(b_, n)
 
-        p = [None, None, None, None, None, None, None, None]
+    if n <= 8:
+        p = [None, None, None, None, None, None, None, None,]
 
         def calculate(a, b, i):
             p[i] = mul(a, b)
 
         arg = [([a11+a22, b11+b22, 1], {}),
-               ([a21+a22, b11,     2], {}),
-               ([a11,     b12-b22, 3], {}),
-               ([a22,     b21-b11, 4], {}),
-               ([a11+a12, b22,     5], {}),
+               ([a21+a22, b11    , 2], {}),
+               ([a11    , b12-b22, 3], {}),
+               ([a22    , b21-b11, 4], {}),
+               ([a11+a12, b22    , 5], {}),
                ([a21-a11, b11+b12, 6], {}),
                ([a12-a22, b21+b22, 7], {}),]
 
@@ -101,17 +98,25 @@ def strassen(a, b):
         pool.wait()
 
         _, p1, p2, p3, p4, p5, p6, p7 = p
+    else:
+        p1 = strassen(a11+a22, b11+b22)
+        p2 = strassen(a21+a22, b11,   )
+        p3 = strassen(a11,     b12-b22)
+        p4 = strassen(a22,     b21-b11)
+        p5 = strassen(a11+a12, b22,   )
+        p6 = strassen(a21-a11, b11+b12)
+        p7 = strassen(a12-a22, b21+b22)
 
-        c11 = p1 + p4 - p5 + p7
-        c12 = p3 + p5
-        c21 = p2 + p4
-        c22 = p1 + p3 - p2 + p6
+    c11 = p1 + p4 - p5 + p7
+    c12 = p3 + p5
+    c21 = p2 + p4
+    c22 = p1 + p3 - p2 + p6
 
-        c1 = np.concatenate((c11, c12), axis=1)
-        c2 = np.concatenate((c21, c22), axis=1)
-        c  = np.concatenate((c1, c2), axis=0)
+    c1 = np.concatenate((c11, c12), axis=1)
+    c2 = np.concatenate((c21, c22), axis=1)
+    c  = np.concatenate((c1, c2), axis=0)
 
-        return c[:a.shape[0], :b.shape[1]]
+    return c[:a.shape[0], :b.shape[1]]
 
 def anotherway(a, b):
     a_, b_, n = expand(a, b)
@@ -186,6 +191,49 @@ def main():
             res = anotherway(a, b)
 
         print(res)
+    else:
+        e, t = [], []
+
+        while True:
+            try:
+                et = [None, None, None, None]
+
+                a, b = read_data()
+
+                ts = time.time()
+                print(control(a, b))
+                et[0] = time.time() - ts
+
+                ts = time.time()
+                print(tradition(a, b))
+                et[1] = time.time() - ts
+
+                ts = time.time()
+                print(strassen(a, b))
+                et[2] = time.time() - ts
+
+                ts = time.time()
+                print(anotherway(a, b))
+                et[3] = time.time() - ts
+
+                e.append(a.shape[0])
+                t.append(et)
+            except EOFError:
+                e = np.array(e)
+                t = np.array(t).T
+                break
+
+        plt.semilogx(e, t[0], '.-', label='numpy')
+        plt.semilogx(e, t[1], '.-', label='tradition')
+        plt.semilogx(e, t[2], '.-', label='strassen')
+        plt.semilogx(e, t[3], '.-', label='anotherway')
+
+        plt.grid()
+        plt.legend()
+        plt.xlabel('2\'s exponential')
+        plt.ylabel('time(s)')
+        plt.title('performance')
+        plt.savefig('exp-time.png')
 
 if __name__ == "__main__":
     main()

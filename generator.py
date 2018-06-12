@@ -1,45 +1,28 @@
 #!bin/python3
 
-import numpy as np
 import argparse
+import numpy as np
 
 def main(args):
-    test   = open('test.txt', 'w')
-    answer = open('answer.txt', 'w')
+    with open('test.txt', 'w') as fp:
+        for exp in range(args.exp):
+            e = 2 ** (exp + 1)
+            a = np.random.randint(100, 1000, size=(e, e))
+            b = np.random.randint(100, 1000, size=(e, e))
 
-    for _ in range(args.number):
-        size = np.random.randint(2, args.size)
-        size = (size, size)
+            fp.write('%d %d\n' % (e, e))
+            for row in a:
+                fp.write(' '.join(row.astype(str)) + '\n')
 
-        mat1 = np.random.randint(0, 100, size)
-        mat2 = np.random.randint(0, 100, size)
-
-        test.write('%d %d\n' % size)
-
-        for r in range(mat1.shape[0]):
-            test.write('%s\n' % (' '.join(mat1[r].astype(str))))
-
-        test.write('%d %d\n' % size)
-
-        for r in range(mat2.shape[0]):
-            test.write('%s\n' % (' '.join(mat2[r].astype(str))))
-
-        ans = np.matmul(mat1, mat2)
-        
-        for r in range(ans.shape[0]):
-            answer.write('%s\n' % (' '.join(ans[r].astype(str))))
-
-    test.close()
-    answer.close()
+            fp.write('%d %d\n' % (e, e))
+            for row in b:
+                fp.write(' '.join(row.astype(str)) + '\n')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--size', '-s', type=int,
-            default=10, help='max size of matrix')
-
-    parser.add_argument('--number', '-n', type=int,
-            default=10, help='number of test set')
+    parser.add_argument('--exp', '-e', type=int,
+            default=10, help='max 2\'s exponential')
 
     args = parser.parse_args()
 
